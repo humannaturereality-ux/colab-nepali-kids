@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Colab सिक्ने यात्रा 🚀</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:  #0F6E56;
+    --green-l:#E1F5EE;
+    --blue:   #185FA5;
+    --blue-l: #E6F1FB;
+    --amber:  #854F0B;
+    --amber-l:#FAEEDA;
+    --pink:   #993556;
+    --pink-l: #FBEAF0;
+    --gray:   #444441;
+    --gray-l: #F1EFE8;
+    --white:  #ffffff;
+    --text:   #2C2C2A;
+    --muted:  #5F5E5A;
+    --border: #D3D1C7;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans Devanagari', 'Baloo 2', sans-serif;
+    background: #F7F5F0;
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #0F3460 0%, #185FA5 60%, #1D9E75 100%);
+    padding: 3rem 1.5rem 5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.05) 0%, transparent 60%),
+                radial-gradient(circle at 80% 20%, rgba(29,158,117,0.2) 0%, transparent 50%);
+  }
+  .hero-emoji { font-size: 3.5rem; display: block; margin-bottom: 0.75rem; animation: float 3s ease-in-out infinite; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+  .hero h1 {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    font-weight: 800;
+    color: white;
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
+    position: relative;
+  }
+  .hero p {
+    font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+    color: rgba(255,255,255,0.85);
+    max-width: 500px;
+    margin: 0 auto 1.5rem;
+    line-height: 1.7;
+    position: relative;
+  }
+  .hero-badges {
+    display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+    position: relative;
+  }
+  .hero-badge {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    backdrop-filter: blur(4px);
+  }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .progress-label {
+    display: flex; justify-content: space-between;
+    font-size: 0.8rem; color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .progress-bar-bg {
+    background: var(--gray-l);
+    border-radius: 10px;
+    height: 8px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), #1D9E75);
+    border-radius: 10px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+  .step-dots {
+    display: flex; gap: 8px; justify-content: center;
+    margin-top: 8px;
+  }
+  .step-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .step-dot.active { background: var(--blue); border-color: var(--blue); color: white; }
+  .step-dot.done   { background: var(--green); border-color: var(--green); color: white; }
+
+  /* MAIN */
+  .main { max-width: 680px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  /* STEP CARD */
+  .step-section { display: none; animation: fadeIn 0.4s ease; }
+  .step-section.active { display: block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+  .step-header {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 1.5rem;
+  }
+  .step-num-big {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 1.4rem; font-weight: 800;
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .step-title-big { font-family: 'Baloo 2', sans-serif; font-size: 1.5rem; font-weight: 700; line-height: 1.3; }
+  .step-sub { font-size: 0.9rem; color: var(--muted); margin-top: 2px; }
+
+  /* STORY BOX */
+  .story-box {
+    border-radius: 14px;
+    padding: 1.2rem 1.4rem;
+    margin-bottom: 1.4rem;
+  }
+  .story-box .story-label {
+    font-size: 0.8rem; font-weight: 600;
+    margin-bottom: 6px; display: block;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .story-box p { font-size: 0.95rem; line-height: 1.75; }
+
+  /* INFO CARDS GRID */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 1.4rem;
+  }
+  .info-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+  }
+  .info-card .icon { font-size: 1.8rem; margin-bottom: 6px; display: block; }
+  .info-card .title { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; }
+  .info-card .desc { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+  /* ACTION STEPS */
+  .action-list { margin-bottom: 1.4rem; }
+  .action-item {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 8px;
+  }
+  .action-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    font-size: 0.85rem; font-weight: 700; color: white;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .action-text { font-size: 0.92rem; line-height: 1.65; }
+  .action-text a { color: var(--blue); text-decoration: none; font-weight: 500; }
+  .action-text a:hover { text-decoration: underline; }
+
+  /* CODE BLOCK */
+  .code-label { font-size: 0.8rem; font-weight: 600; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .code-block {
+    background: #1E1E2E;
+    border-radius: 12px;
+    padding: 1.1rem 1.3rem;
+    margin-bottom: 1rem;
+    position: relative;
+    overflow-x: auto;
+  }
+  .code-block pre {
+    font-family: 'Courier New', monospace;
+    font-size: 0.88rem;
+    line-height: 1.75;
+    color: #CDD6F4;
+    white-space: pre;
+  }
+  .code-block .kw  { color: #CBA6F7; }
+  .code-block .fn  { color: #89DCEB; }
+  .code-block .str { color: #A6E3A1; }
+  .code-block .cm  { color: #6C7086; }
+  .copy-btn {
+    position: absolute; top: 8px; right: 8px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.7);
+    border-radius: 6px; padding: 4px 10px;
+    font-size: 0.75rem; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .copy-btn:hover { background: rgba(255,255,255,0.2); color: white; }
+  .copy-btn.copied { background: rgba(29,158,117,0.3); color: #1D9E75; border-color: #1D9E75; }
+
+  /* SUCCESS / WARNING BOX */
+  .success-box {
+    background: var(--green-l);
+    border: 1px solid #9FE1CB;
+    border-radius: 12px;
+    padding: 0.9rem 1.2rem;
+    font-size: 0.92rem;
+    color: var(--green);
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+  .warning-box {
+    background: #FCEBEB;
+    border: 1px solid #F7C1C1;
+    border-radius: 12px;
+    padding: 0.9rem 1.2rem;
+    font-size: 0.9rem;
+    color: #A32D2D;
+    margin-bottom: 1rem;
+  }
+
+  /* TABLE */
+  .info-table { width: 100%; border-collapse: collapse; margin-bottom: 1.4rem; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+  .info-table th { background: var(--blue); color: white; padding: 10px 14px; font-size: 0.88rem; text-align: left; font-weight: 600; }
+  .info-table td { padding: 10px 14px; font-size: 0.88rem; border-bottom: 1px solid var(--border); }
+  .info-table tr:last-child td { border-bottom: none; }
+  .info-table tr:nth-child(even) td { background: var(--blue-l); }
+  .code-inline { font-family: 'Courier New', monospace; background: var(--gray-l); padding: 2px 7px; border-radius: 5px; font-size: 0.85rem; color: var(--blue); }
+
+  /* QUIZ */
+  .quiz-box {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.3rem 1.4rem;
+    margin-bottom: 1.4rem;
+  }
+  .quiz-box h3 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; }
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-opt {
+    background: var(--gray-l);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    font-family: 'Noto Sans Devanagari', sans-serif;
+  }
+  .quiz-opt:hover { background: var(--blue-l); border-color: var(--blue); }
+  .quiz-opt.correct { background: var(--green-l); border-color: var(--green); color: var(--green); }
+  .quiz-opt.wrong   { background: #FCEBEB; border-color: #E24B4A; color: #A32D2D; }
+  .quiz-result { margin-top: 10px; font-size: 0.9rem; font-weight: 500; min-height: 22px; }
+
+  /* NAV BUTTONS */
+  .nav-btns {
+    display: flex; gap: 10px; justify-content: space-between;
+    margin-top: 2rem;
+  }
+  .btn {
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    font-family: 'Noto Sans Devanagari', sans-serif;
+  }
+  .btn-prev { background: white; border: 1.5px solid var(--border); color: var(--gray); }
+  .btn-prev:hover { background: var(--gray-l); }
+  .btn-next { background: var(--blue); color: white; flex: 1; box-shadow: 0 3px 10px rgba(24,95,165,0.3); }
+  .btn-next:hover { background: #1454A0; transform: translateY(-1px); box-shadow: 0 5px 14px rgba(24,95,165,0.4); }
+  .btn-finish { background: var(--green); color: white; flex: 1; box-shadow: 0 3px 10px rgba(15,110,86,0.3); }
+  .btn-finish:hover { background: #0B5E49; transform: translateY(-1px); }
+
+  /* COMPLETION */
+  .completion {
+    text-align: center;
+    padding: 2rem 1rem;
+  }
+  .completion .big-emoji { font-size: 5rem; display: block; margin-bottom: 1rem; animation: pop 0.5s ease; }
+  @keyframes pop { 0%{transform:scale(0)} 70%{transform:scale(1.2)} 100%{transform:scale(1)} }
+  .completion h2 { font-family: 'Baloo 2', sans-serif; font-size: 2rem; font-weight: 800; color: var(--green); margin-bottom: 0.5rem; }
+  .completion p { font-size: 1rem; color: var(--muted); margin-bottom: 1.5rem; line-height: 1.7; }
+  .checklist { text-align: left; max-width: 360px; margin: 0 auto 1.5rem; }
+  .check-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.92rem; }
+  .check-item:last-child { border-bottom: none; }
+  .check-icon { width: 24px; height: 24px; background: var(--green); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; }
+
+  .restart-btn {
+    background: var(--green-l);
+    border: 1.5px solid #9FE1CB;
+    color: var(--green);
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    transition: all 0.2s;
+  }
+  .restart-btn:hover { background: #C5EFE0; }
+
+  /* OUTPUT BOX */
+  .output-box {
+    background: #1E1E2E;
+    border-radius: 12px;
+    padding: 1rem 1.3rem;
+    margin-bottom: 1rem;
+  }
+  .output-box .out-label { font-size: 0.75rem; color: #6C7086; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .output-box pre { font-family: 'Courier New', monospace; font-size: 0.85rem; color: #A6E3A1; line-height: 1.7; }
+
+  @media (max-width: 480px) {
+    .hero { padding: 2rem 1rem 4rem; }
+    .main { padding: 1.5rem 1rem 3rem; }
+    .nav-btns { flex-wrap: wrap; }
+    .btn-prev { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="hero-emoji">🤖</span>
+  <h1>Google Colab सिक्ने यात्रा</h1>
+  <p>बालबालिकाका लागि नेपाली भाषामा — ४ सजिला कदममा आफ्नो पहिलो AI Program बनाउनुहोस्!</p>
+  <div class="hero-badges">
+    <span class="hero-badge">🆓 बिल्कुल नि:शुल्क</span>
+    <span class="hero-badge">🇳🇵 नेपाली भाषामा</span>
+    <span class="hero-badge">👶 सबैका लागि</span>
+    <span class="hero-badge">🚀 पहिलो AI Project</span>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span id="progress-text">कदम १ मा हुनुहुन्छ</span>
+    <span id="progress-pct">0%</span>
+  </div>
+  <div class="progress-bar-bg">
+    <div class="progress-bar-fill" id="progress-fill"></div>
+  </div>
+  <div class="step-dots">
+    <div class="step-dot active" onclick="goTo(0)" id="dot-0">१</div>
+    <div class="step-dot" onclick="goTo(1)" id="dot-1">२</div>
+    <div class="step-dot" onclick="goTo(2)" id="dot-2">३</div>
+    <div class="step-dot" onclick="goTo(3)" id="dot-3">४</div>
+    <div class="step-dot" onclick="goTo(4)" id="dot-4">✓</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ── STEP 1 ── -->
+  <div class="step-section active" id="step-0">
+    <div class="step-header">
+      <div class="step-num-big" style="background:var(--green)">१</div>
+      <div>
+        <div class="step-title-big">Google Colab भनेको के हो?</div>
+        <div class="step-sub">जादूको कापी — internet मा!</div>
+      </div>
+    </div>
+
+    <div class="story-box" style="background:var(--amber-l)">
+      <span class="story-label" style="color:var(--amber)">📖 उपमा</span>
+      <p style="color:var(--amber)">मान्नुहोस् तपाईंको साथीले एउटा जादूको कापी पठायो। त्यो कापीमा जे लेख्यो, त्यो तुरुन्तै भइहाल्छ — <strong>"२+२"</strong> लेख्यो भने <strong>४</strong> आउँछ। Google Colab ठ्याक्कै त्यस्तै हो! एउटा जादूको कापी जुन internet मा छ।</p>
+    </div>
+
+    <div class="cards-grid">
+      <div class="info-card">
+        <span class="icon">💻</span>
+        <div class="title">के हो?</div>
+        <div class="desc">Google को free online notebook — code लेख्ने र चलाउने ठाउँ</div>
+      </div>
+      <div class="info-card">
+        <span class="icon">🌐</span>
+        <div class="title">किन?</div>
+        <div class="desc">कुनै software install नगरी browser मै AI बनाउन सकिन्छ</div>
+      </div>
+      <div class="info-card">
+        <span class="icon">🆓</span>
+        <div class="title">खर्च?</div>
+        <div class="desc">बिल्कुल नि:शुल्क! Gmail account भए पुग्छ</div>
+      </div>
+    </div>
+
+    <p class="code-label">अहिले नै गर्नुहोस् — ३ कदम मात्र:</p>
+    <div class="action-list">
+      <div class="action-item">
+        <div class="action-num" style="background:var(--green)">१</div>
+        <div class="action-text">Browser खोल्नुहोस् र जानुहोस्: <a href="https://colab.research.google.com" target="_blank">colab.research.google.com</a></div>
+      </div>
+      <div class="action-item">
+        <div class="action-num" style="background:var(--green)">२</div>
+        <div class="action-text">आफ्नो Gmail account बाट sign in गर्नुहोस्</div>
+      </div>
+      <div class="action-item">
+        <div class="action-num" style="background:var(--green)">३</div>
+        <div class="action-text">"New Notebook" मा click गर्नुहोस् — तपाईंको जादूको कापी तयार!</div>
+      </div>
+    </div>
+
+    <div class="quiz-box">
+      <h3>🧠 बुझ्नुभयो? एउटा प्रश्न:</h3>
+      <p style="font-size:0.92rem;margin-bottom:12px;">Google Colab प्रयोग गर्न के चाहिन्छ?</p>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="quiz(this,false,'q1')">महँगो computer किन्नु पर्छ</button>
+        <button class="quiz-opt" onclick="quiz(this,true,'q1')">Gmail account र internet मात्र</button>
+        <button class="quiz-opt" onclick="quiz(this,false,'q1')">Python software install गर्नु पर्छ</button>
+      </div>
+      <div class="quiz-result" id="qr-q1"></div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-next" onclick="goTo(1)">अर्को कदम: Hugging Face Token →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 2 ── -->
+  <div class="step-section" id="step-1">
+    <div class="step-header">
+      <div class="step-num-big" style="background:var(--blue)">२</div>
+      <div>
+        <div class="step-title-big">Hugging Face Token</div>
+        <div class="step-sub">AI को ढोका खोल्ने चाबी!</div>
+      </div>
+    </div>
+
+    <div class="story-box" style="background:var(--blue-l)">
+      <span class="story-label" style="color:var(--blue)">📖 उपमा</span>
+      <p style="color:var(--blue)">Hugging Face एउटा विशाल AI library हो — जस्तै ठूलो पुस्तकालय। त्यो पुस्तकालयमा छिर्न membership card चाहिन्छ। <strong>Token भनेको त्यही membership card हो।</strong> एकपटक card बनायो भने, हजारौं AI models प्रयोग गर्न पाइन्छ — बिल्कुल नि:शुल्क!</p>
+    </div>
+
+    <p class="code-label">भाग A — Token बनाउने (website मा):</p>
+    <div class="action-list">
+      <div class="action-item">
+        <div class="action-num" style="background:var(--blue)">१</div>
+        <div class="action-text"><a href="https://huggingface.co/join" target="_blank">huggingface.co/join</a> मा गएर free account बनाउनुहोस्</div>
+      </div>
+      <div class="action-item">
+        <div class="action-num" style="background:var(--blue)">२</div>
+        <div class="action-text">Profile icon → <strong>Settings</strong> → <strong>Access Tokens</strong> मा जानुहोस्</div>
+      </div>
+      <div class="action-item">
+        <div class="action-num" style="background:var(--blue)">३</div>
+        <div class="action-text">"New token" → नाम दिनुहोस् → <strong>Read</strong> permission छान्नुहोस् → Generate</div>
+      </div>
+      <div class="action-item">
+        <div class="action-num" style="background:var(--blue)">४</div>
+        <div class="action-text">Token copy गर्नुहोस् — <span class="code-inline">hf_</span> बाट सुरु हुन्छ। Safe ठाउँमा राख्नुहोस्!</div>
+      </div>
+    </div>
+
+    <div class="warning-box">⚠️ <strong>Token कसैलाई नदिनुहोस्!</strong> यो तपाईंको password जस्तै गोप्य कुरा हो। Screenshot मा पनि नदेखाउनुहोस्।</div>
+
+    <p class="code-label">भाग B — Token Colab मा राख्ने:</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this, 'code1')">Copy</button>
+      <pre id="code1"><span class="kw">from</span> huggingface_hub <span class="kw">import</span> <span class="fn">login</span>
+
+<span class="fn">login</span>(token=<span class="str">"hf_यहाँ_आफ्नो_token_राख्नुहोस्"</span>)</pre>
+    </div>
+
+    <div class="success-box">✓ <strong>"Login successful"</strong> देखियो भने कदम २ पूरा! Cell चलाउन <strong>Shift + Enter</strong> थिच्नुहोस्।</div>
+
+    <div class="quiz-box">
+      <h3>🧠 Token भनेको के हो?</h3>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="quiz(this,false,'q2')">एउटा programming भाषा</button>
+        <button class="quiz-opt" onclick="quiz(this,true,'q2')">AI को ढोका खोल्ने membership card</button>
+        <button class="quiz-opt" onclick="quiz(this,false,'q2')">Google को product को नाम</button>
+      </div>
+      <div class="quiz-result" id="qr-q2"></div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goTo(0)">← पछाडि</button>
+      <button class="btn btn-next" onclick="goTo(2)">अर्को: Libraries Import →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 3 ── -->
+  <div class="step-section" id="step-2">
+    <div class="step-header">
+      <div class="step-num-big" style="background:var(--amber)">३</div>
+      <div>
+        <div class="step-title-big">Libraries Import गर्ने</div>
+        <div class="step-sub">काम सुरु गर्नु अघि औजार निकाल्नु!</div>
+      </div>
+    </div>
+
+    <div class="story-box" style="background:var(--amber-l)">
+      <span class="story-label" style="color:var(--amber)">📖 उपमा</span>
+      <p style="color:var(--amber)">खाना पकाउनु अघि भाँडा, चक्कु, तेल निकाल्छौं — नत्र कसरी पकाउने? त्यसरी नै, AI program बनाउनु अघि <strong>Libraries "निकाल्नु" (import)</strong> पर्छ। Libraries भनेको अरूले पहिले नै लेखिसकेका code हरू हुन् — हामीले फेरि लेख्नु पर्दैन!</p>
+    </div>
+
+    <p class="code-label">हाम्रो project मा चाहिने libraries:</p>
+    <table class="info-table">
+      <tr><th>Library</th><th>काम</th><th>उपमा</th></tr>
+      <tr><td><span class="code-inline">transformers</span></td><td>AI models प्रयोग गर्न</td><td>मुख्य भाँडा 🍳</td></tr>
+      <tr><td><span class="code-inline">torch</span></td><td>AI को "इन्जिन"</td><td>ग्याँस चुल्हो 🔥</td></tr>
+      <tr><td><span class="code-inline">huggingface_hub</span></td><td>HF सँग जोड्न</td><td>बजारसम्मको बाटो 🛣️</td></tr>
+    </table>
+
+    <p class="code-label">पहिले install गर्नुहोस् (नयाँ cell मा):</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this, 'code2')">Copy</button>
+      <pre id="code2">!pip install transformers torch huggingface_hub</pre>
+    </div>
+
+    <p class="code-label">त्यसपछि import गर्नुहोस् (अर्को नयाँ cell मा):</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this, 'code3')">Copy</button>
+      <pre id="code3"><span class="kw">from</span> transformers <span class="kw">import</span> <span class="fn">pipeline</span>
+<span class="kw">from</span> huggingface_hub <span class="kw">import</span> <span class="fn">login</span>
+<span class="kw">import</span> torch
+
+<span class="fn">print</span>(<span class="str">"सबै libraries तयार छन्! ✓"</span>)</pre>
+    </div>
+
+    <div class="success-box">✓ <strong>"सबै libraries तयार छन्! ✓"</strong> देखियो भने कदम ३ पूरा!</div>
+
+    <div class="quiz-box">
+      <h3>🧠 Library किन import गर्नु पर्छ?</h3>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="quiz(this,false,'q3')">यो गर्नु पर्दैन, optional हो</button>
+        <button class="quiz-opt" onclick="quiz(this,false,'q3')">Computer राम्रो देखिन</button>
+        <button class="quiz-opt" onclick="quiz(this,true,'q3')">Code लेख्नु अघि औजार तयार गर्न</button>
+      </div>
+      <div class="quiz-result" id="qr-q3"></div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goTo(1)">← पछाडि</button>
+      <button class="btn btn-next" onclick="goTo(3)">अर्को: पहिलो AI Project →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 4 ── -->
+  <div class="step-section" id="step-3">
+    <div class="step-header">
+      <div class="step-num-big" style="background:var(--pink)">४</div>
+      <div>
+        <div class="step-title-big">पहिलो AI Project!</div>
+        <div class="step-sub">Sentiment Analysis — खुशी कि दुखी?</div>
+      </div>
+    </div>
+
+    <div class="story-box" style="background:var(--pink-l)">
+      <span class="story-label" style="color:var(--pink)">🎯 लक्ष्य</span>
+      <p style="color:var(--pink)">हामी एउटा AI बनाउँछौं जसले English वाक्य पढेर भन्न सक्छ — <strong>"यो वाक्य खुशीको (POSITIVE) हो कि दुखीको (NEGATIVE)।"</strong> यसलाई <strong>Sentiment Analysis</strong> भनिन्छ!</p>
+    </div>
+
+    <p class="code-label">नयाँ cell मा यो पूरै code राख्नुहोस्:</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this, 'code4')">Copy</button>
+      <pre id="code4"><span class="kw">from</span> transformers <span class="kw">import</span> <span class="fn">pipeline</span>
+
+<span class="cm"># AI model load गर्ने</span>
+classifier = <span class="fn">pipeline</span>(<span class="str">"sentiment-analysis"</span>)
+
+<span class="cm"># वाक्यहरू जाँच गर्ने</span>
+sentences = [
+    <span class="str">"I am very happy today!"</span>,
+    <span class="str">"This is so sad and terrible."</span>,
+    <span class="str">"I love learning AI!"</span>
+]
+
+<span class="kw">for</span> sentence <span class="kw">in</span> sentences:
+    result = classifier(sentence)
+    <span class="fn">print</span>(<span class="str">f"वाक्य: {sentence}"</span>)
+    <span class="fn">print</span>(<span class="str">f"भावना: {result[0]['label']} ({result[0]['score']:.0%})"</span>)
+    <span class="fn">print</span>(<span class="str">"---"</span>)</pre>
+    </div>
+
+    <p class="code-label">✓ output यस्तो आउनु पर्छ:</p>
+    <div class="output-box">
+      <div class="out-label">Output</div>
+      <pre>वाक्य: I am very happy today!
+भावना: POSITIVE (100%)
+---
+वाक्य: This is so sad and terrible.
+भावना: NEGATIVE (100%)
+---
+वाक्य: I love learning AI!
+भावना: POSITIVE (100%)
+---</pre>
+    </div>
+
+    <p class="code-label">Code को अर्थ:</p>
+    <table class="info-table">
+      <tr><th>Code</th><th>अर्थ</th></tr>
+      <tr><td><span class="code-inline">pipeline(...)</span></td><td>AI model तयार गर्छ</td></tr>
+      <tr><td><span class="code-inline">classifier(...)</span></td><td>वाक्य AI लाई दिन्छ र जवाफ लिन्छ</td></tr>
+      <tr><td><span class="code-inline">for sentence</span></td><td>एक-एक वाक्य जाँच गर्छ (loop)</td></tr>
+      <tr><td><span class="code-inline">result[0]['label']</span></td><td>POSITIVE वा NEGATIVE</td></tr>
+      <tr><td><span class="code-inline">result[0]['score']</span></td><td>AI कति निश्चित छ — percentage</td></tr>
+    </table>
+
+    <div class="story-box" style="background:var(--green-l); margin-top:0.5rem;">
+      <span class="story-label" style="color:var(--green)">💡 आफैं try गर्नुहोस्!</span>
+      <p style="color:var(--green)">sentences list मा आफ्नै वाक्यहरू थप्न सक्नुहुन्छ। जस्तै: <strong>"Nepal is a beautiful country!"</strong> — AI ले के भन्छ हेर्नुहोस्!</p>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-prev" onclick="goTo(2)">← पछाडि</button>
+      <button class="btn btn-finish" onclick="goTo(4)">🎉 Project सकियो!</button>
+    </div>
+  </div>
+
+  <!-- ── COMPLETION ── -->
+  <div class="step-section" id="step-4">
+    <div class="completion">
+      <span class="big-emoji">🎉</span>
+      <h2>बधाई छ!</h2>
+      <p>तपाईंले सफलतापूर्वक सबै ४ कदम पूरा गर्नुभयो!<br>तपाईंले आफ्नो <strong>पहिलो AI program</strong> बनाउनु भयो — यो साँच्चै ठूलो उपलब्धि हो! 🏆</p>
+
+      <div class="checklist">
+        <div class="check-item"><div class="check-icon">✓</div>Google Colab खोल्ने र notebook बनाउने</div>
+        <div class="check-item"><div class="check-icon">✓</div>Hugging Face account र Token बनाउने</div>
+        <div class="check-item"><div class="check-icon">✓</div>Libraries install र import गर्ने</div>
+        <div class="check-item"><div class="check-icon">✓</div>AI Sentiment Analysis program चलाउने</div>
+      </div>
+
+      <div class="story-box" style="background:var(--blue-l); text-align:left; margin-bottom:1.5rem;">
+        <span class="story-label" style="color:var(--blue)">🚀 अर्को के सिक्ने?</span>
+        <p style="color:var(--blue)">अब तपाईं image recognition, text generation, र translation AI पनि बनाउन सक्नुहुन्छ। आफ्नो teacher वा साथीलाई सोध्नुहोस् — सँगै सिकौं!</p>
+      </div>
+
+      <button class="restart-btn" onclick="goTo(0)">🔄 फेरि सुरु गर्नुहोस्</button>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+  let current = 0;
+  const total = 4;
+
+  function goTo(n) {
+    document.getElementById('step-' + current).classList.remove('active');
+    document.getElementById('dot-' + current).classList.remove('active');
+    if (current < n) document.getElementById('dot-' + current).classList.add('done');
+
+    current = n;
+    document.getElementById('step-' + current).classList.add('active');
+
+    const dot = document.getElementById('dot-' + current);
+    dot.classList.remove('done');
+    dot.classList.add('active');
+
+    const pct = Math.round((current / total) * 100);
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-pct').textContent = pct + '%';
+
+    const labels = ['कदम १ मा हुनुहुन्छ', 'कदम २ मा हुनुहुन्छ', 'कदम ३ मा हुनुहुन्छ', 'कदम ४ मा हुनुहुन्छ', 'सकियो! 🎉'];
+    document.getElementById('progress-text').textContent = labels[current];
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function quiz(btn, correct, id) {
+    const opts = btn.parentElement.querySelectorAll('.quiz-opt');
+    opts.forEach(o => { o.classList.remove('correct','wrong'); o.disabled = true; });
+    btn.classList.add(correct ? 'correct' : 'wrong');
+    const result = document.getElementById('qr-' + id);
+    if (correct) {
+      result.style.color = 'var(--green)';
+      result.textContent = '✓ एकदम सही! राम्रोसँग बुझ्नुभयो।';
+    } else {
+      result.style.color = '#A32D2D';
+      result.textContent = '✗ होइन — फेरि सोच्नुहोस्! हरियो जवाफ सही हो।';
+      opts.forEach(o => { if (o !== btn) { /* highlight correct */ } });
+    }
+  }
+
+  function copyCode(btn, id) {
+    const pre = document.getElementById(id);
+    const text = pre.innerText || pre.textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
